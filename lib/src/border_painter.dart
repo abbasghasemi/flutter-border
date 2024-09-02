@@ -90,12 +90,12 @@ class BorderPainter extends CustomPainter {
       double distance = start;
       while (distance < s) {
         dashPattern.next;
-        if (dashPattern._i % 2 == 0) {
-          final radiusRatio = dashPattern._i < 2
+        if (dashPattern.index % 2 == 0) {
+          final radiusRatio = dashPattern.index < 2
               ? dashRadius
               : Radius.elliptical(
-                  dashRadius.x * dashPattern.current / dashPattern._list.first,
-                  dashRadius.y * dashPattern.current / dashPattern._list.first,
+                  dashRadius.x * dashPattern.current / dashPattern.list.first,
+                  dashRadius.y * dashPattern.current / dashPattern.list.first,
                 );
           double m = min(dashPattern.current, s - distance);
           canvas.drawRRect(
@@ -113,7 +113,7 @@ class BorderPainter extends CustomPainter {
         distance += dashPattern.current;
       }
       if (start > 0) {
-        final e = start - dashPattern._list.last;
+        final e = start - dashPattern.list.last;
         canvas.drawRRect(
             RRect.fromRectAndRadius(
               Rect.fromLTWH(
@@ -177,11 +177,11 @@ class BorderPainter extends CustomPainter {
           final tangent = pathMetric.getTangentForOffset(distance);
           if (tangent != null) {
             final offset = tangent.position;
-            final radiusRatio = dashPattern._i < 2
+            final radiusRatio = dashPattern.index < 2
                 ? dashRadius
                 : Radius.elliptical(
-                    dashRadius.x * dashPattern.before / dashPattern._list.first,
-                    dashRadius.y * dashPattern.before / dashPattern._list.first,
+                    dashRadius.x * dashPattern.before / dashPattern.list.first,
+                    dashRadius.y * dashPattern.before / dashPattern.list.first,
                   );
             dashPath.addRRect(RRect.fromRectAndRadius(
                 Rect.fromCenter(center: offset, width: w, height: w),
@@ -211,6 +211,7 @@ class BorderPainter extends CustomPainter {
   }
 }
 
+/// Border Feature
 enum PathStrategy {
   /// The pattern in the corners will be move exactly on the path
   aroundExtract,
@@ -239,10 +240,19 @@ bool _validDashPattern(List<double> dp) {
   return true;
 }
 
+/// Provides loop in the list
 class CircularInterval<T> {
   late final List<T> _list;
   late int _i;
 
+  /// list
+  List<T> get list => _list;
+
+  /// index of pointer
+  int get index => _i;
+
+  /// Takes a non empty list and if the number of elements is not even pair
+  /// it will add it from the beginning of the list
   CircularInterval(List<T> list) {
     assert(list.isNotEmpty, 'List is empty!');
     if (list.length % 2 == 0) {
@@ -254,15 +264,18 @@ class CircularInterval<T> {
     }
   }
 
+  /// changes pointer to index of the last element
   void reset() {
     _i = _list.length - 1;
   }
 
+  /// returns the element before the current element
   T get before {
     if (_i == 0) return _list.last;
     return _list[_i - 1];
   }
 
+  /// returns the element before the current element and updates the pointer
   T get back {
     if (_list.length == 1) return _list.first;
     if (_i == 0) {
@@ -272,10 +285,12 @@ class CircularInterval<T> {
     return _list[--_i];
   }
 
+  /// returns the current element
   T get current {
     return _list[_i];
   }
 
+  /// returns the element after the current element and updates the pointer
   T get next {
     if (_list.length == 1) return _list.first;
     if (_i + 1 == _list.length) {
@@ -285,11 +300,13 @@ class CircularInterval<T> {
     return _list[++_i];
   }
 
+  /// returns the element after the current element
   T get after {
     if (_list.length == _i + 1) return _list.first;
     return _list[_i + 1];
   }
 
+  /// reduce
   double get sumDouble {
     return (_list as List<double>).reduce((e1, e2) => e1 + e2);
   }

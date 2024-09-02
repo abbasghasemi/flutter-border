@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+/// A collection of paths
 class ObjectPath {
   static Path star(Size size, int raysCount) {
     final Path path = Path();

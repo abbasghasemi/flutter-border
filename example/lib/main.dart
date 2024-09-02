@@ -52,8 +52,8 @@ class BorderActivity extends StatelessWidget {
                 ],
                 transform: GradientRotation(progress * 6),
               ),
-              animationDuration: const Duration(seconds: 1),
-              animated: true,
+              animateDuration: const Duration(seconds: 1),
+              animateBorder: true,
               radius: const Radius.circular(25),
               dashPattern: const [15, 5, 7.5, 10],
               strokeWidth: 3,
@@ -78,7 +78,7 @@ class BorderActivity extends StatelessWidget {
               strokeJoin: StrokeJoin.miter,
             ),
             CustomBorder(
-              animationDuration: const Duration(seconds: 1),
+              animateDuration: const Duration(seconds: 1),
               gradientBuilder: (progress) => LinearGradient(
                 colors: const [Colors.blue, Colors.pinkAccent],
                 transform: GradientRotation((1 - progress) * 6),
@@ -141,7 +141,7 @@ class BorderActivity extends StatelessWidget {
               path: ObjectPath.star(const Size(98, 98), 5),
             ),
             CustomBorder(
-              animated: true,
+              animateBorder: true,
               gradientBuilder: (progress) => LinearGradient(
                 colors: const [
                   Colors.purple,
@@ -151,7 +151,7 @@ class BorderActivity extends StatelessWidget {
                 ],
                 transform: GradientRotation(progress * 6),
               ),
-              animationDuration: const Duration(seconds: 5),
+              animateDuration: const Duration(seconds: 5),
               radius: const Radius.circular(15),
               dashPattern: const [10, 3, 30, 3],
               dashRadius: const Radius.circular(5),
@@ -170,8 +170,8 @@ class BorderActivity extends StatelessWidget {
               ),
             ),
             const CustomBorder(
-              animated: true,
-              animationDuration: Duration(milliseconds: 250),
+              animateBorder: true,
+              animateDuration: Duration(milliseconds: 250),
               color: Colors.redAccent,
               size: Size(98, 98),
               radius: Radius.circular(25),

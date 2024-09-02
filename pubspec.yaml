@@ -1,6 +1,6 @@
 name: custom_border
 description: "A flutter package to add border(dotted,dashed,lined,...) for all widgets"
-version: 1.0.2
+version: 1.0.3
 repository: https://github.com/abbasghasemi/flutter-border
 homepage: https://github.com/abbasghasemi/flutter-border
 issue_tracker: https://github.com/abbasghasemi/flutter-border/issues

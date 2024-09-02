@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:custom_border/border.dart';
 import 'package:flutter/widgets.dart';
 
 part 'border_painter.dart';
@@ -9,12 +10,19 @@ part 'border_painter.dart';
 typedef GradientBuilder = Gradient Function(double progress);
 
 class CustomBorder extends StatelessWidget {
+  /// any widget
   final Widget? child;
 
   /// border animated
-  final bool animated;
-  final Duration? animationDuration;
+  final bool animateBorder;
+
+  /// enable animation
+  final Duration? animateDuration;
+
+  /// border color
   final Color? color;
+
+  /// border gradient
   final GradientBuilder? gradientBuilder;
 
   ///  [width & space]
@@ -33,15 +41,19 @@ class CustomBorder extends StatelessWidget {
 
   /// box size, for when child is null
   final Size size;
+
+  /// custom path
+  /// see [ObjectPath]
   final Path? path;
 
+  /// see [PathStrategy]
   final PathStrategy pathStrategy;
 
   const CustomBorder({
     super.key,
     this.child,
-    this.animationDuration,
-    this.animated = false,
+    this.animateDuration,
+    this.animateBorder = false,
     this.color,
     this.gradientBuilder,
     this.dashPattern,
@@ -61,7 +73,7 @@ class CustomBorder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return animationDuration == null
+    return animateDuration == null
         ? CustomPaint(
             size: size,
             painter: BorderPainter(
@@ -98,34 +110,38 @@ class _AnimatedCustomBorder extends StatefulWidget {
 
 class _AnimatedCustomBorderState extends State<_AnimatedCustomBorder>
     with SingleTickerProviderStateMixin {
-  late final AnimationController controller;
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: widget.parent.animateDuration,
+  );
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      vsync: this,
-      duration: widget.parent.animationDuration,
-    );
     Tween<double> tween = Tween(begin: 0, end: 1);
-    tween.animate(controller)
+    tween.animate(_controller)
       ..addListener(() {
-        setState(() {});
+        if (_controller.isAnimating) setState(() {});
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          controller.repeat();
+          _controller.repeat();
         } else if (status == AnimationStatus.dismissed) {
-          controller.forward();
+          _controller.forward();
         }
       });
-    controller.forward();
+    _controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnimatedCustomBorder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _controller.duration = widget.parent.animateDuration;
   }
 
   @override
   void dispose() {
-    controller.stop();
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -134,8 +150,8 @@ class _AnimatedCustomBorderState extends State<_AnimatedCustomBorder>
     return CustomPaint(
       size: widget.parent.size,
       painter: BorderPainter(
-        progress: controller.value,
-        animated: widget.parent.animated,
+        progress: _controller.value,
+        animated: widget.parent.animateBorder,
         color: widget.parent.color,
         gradientBuilder: widget.parent.gradientBuilder,
         dashPattern: widget.parent.dashPattern,
